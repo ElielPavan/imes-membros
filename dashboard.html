@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IME Cosmópolis - Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: white;
+      padding: 14px 30px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    header img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+    }
+
+    header .header-texto h1 {
+      font-size: 1.2rem;
+      line-height: 1.3;
+    }
+
+    header .header-texto span {
+      font-size: 0.82rem;
+      color: #aaa;
+    }
+
+    .main {
+      padding: 25px 30px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 25px;
+      flex: 1;
+      min-width: 180px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 4px solid #4a90e2;
+    }
+
+    .card.verde { border-left-color: #28a745; }
+    .card.laranja { border-left-color: #fd7e14; }
+    .card.roxo { border-left-color: #6f42c1; }
+    .card.vermelho { border-left-color: #dc3545; }
+
+    .card h3 {
+      font-size: 0.8rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    /* Painéis lado a lado */
+    .paineis-duplos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 900px) {
+      .paineis-duplos { grid-template-columns: 1fr; }
+    }
+
+    .painel {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .painel.rosa { border-left: 4px solid #e83e8c; }
+    .painel.amarelo { border-left: 4px solid #fd7e14; }
+
+    .painel h2 {
+      font-size: 1rem;
+      color: #1a1a2e;
+      margin-bottom: 15px;
+    }
+
+    /* Aniversariantes */
+    .aniversarios-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .aniv-card {
+      background: #fff0f6;
+      border: 1px solid #f5c6db;
+      border-radius: 10px;
+      padding: 12px 16px;
+      min-width: 200px;
+      flex: 1;
+    }
+
+    .aniv-nome {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .aniv-data {
+      font-size: 0.8rem;
+      color: #e83e8c;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .aniv-contato {
+      font-size: 0.82rem;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .aniv-contato a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    .aniv-contato a:hover { text-decoration: underline; }
+
+    /* Sem café */
+    .cafe-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .cafe-item {
+      background: #fff8f0;
+      border: 1px solid #fdd8b0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cafe-item .cafe-nome {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #1a1a2e;
+    }
+
+    .cafe-item .cafe-contato {
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .cafe-item .cafe-contato a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    .cafe-item .cafe-contato a:hover { text-decoration: underline; }
+
+    .btn-convidar {
+      background: #fd7e14;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-convidar:hover { background: #e06c00; }
+
+    .sem-pendencias {
+      color: #888;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      padding: 9px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+
+    .toolbar input { flex: 1; min-width: 200px; }
+
+    /* Tabela */
+    .tabela-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    thead th {
+      padding: 13px 15px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: #f8f9ff; }
+
+    tbody td {
+      padding: 12px 15px;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge.ativo { background: #d4edda; color: #155724; }
+    .badge.inativo { background: #f8d7da; color: #721c24; }
+    .badge.visitante { background: #fff3cd; color: #856404; }
+    .badge.liderança { background: #cce5ff; color: #004085; }
+
+    .btn-ver {
+      background: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .btn-ver:hover { background: #2d2d5e; }
+
+    .btn-excluir {
+      background: #f8d7da;
+      color: #721c24;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    .btn-excluir:hover { background: #f5c6cb; }
+
+    .reg-num {
+      font-weight: 700;
+      color: #4a90e2;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+      font-style: italic;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.aberto { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      padding: 30px;
+      max-width: 620px;
+      width: 95%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal h2 {
+      color: #1a1a2e;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #e8e8e8;
+      padding-bottom: 12px;
+    }
+
+    .modal-fechar {
+      position: absolute;
+      top: 15px; right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .modal-campo { display: flex; flex-direction: column; }
+    .modal-campo.full { grid-column: 1 / -1; }
+
+    .modal-campo span:first-child {
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+
+    .modal-campo span:last-child {
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      font-weight: 600;
+    }
+
+    .num-registro-modal {
+      background: #f0f4ff;
+      border: 1px solid #c5d5f5;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #4a90e2;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .main { padding: 15px; }
+      .modal-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Logo IME" />
+  <div class="header-texto">
+    <h1>IME Cosmópolis</h1>
+    <span>Igreja Movimento do Espírito Santo — Dashboard</span>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- Cards -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total de Membros</h3>
+      <p id="totalMembros">—</p>
+    </div>
+    <div class="card verde">
+      <h3>Ativos</h3>
+      <p id="totalAtivos">—</p>
+    </div>
+    <div class="card laranja">
+      <h3>Visitantes</h3>
+      <p id="totalVisitantes">—</p>
+    </div>
+    <div class="card roxo">
+      <h3>Liderança</h3>
+      <p id="totalLideranca">—</p>
+    </div>
+    <div class="card vermelho">
+      <h3>Sem Café</h3>
+      <p id="totalSemCafe">—</p>
+    </div>
+  </div>
+
+  <!-- Painéis duplos -->
+  <div class="paineis-duplos">
+
+    <!-- Aniversariantes -->
+    <div class="painel rosa">
+      <h2>🎂 Aniversariantes da Semana</h2>
+      <div id="aniversariosLista" class="aniversarios-lista">
+        <span class="sem-pendencias">Carregando...</span>
+      </div>
+    </div>
+
+    <!-- Sem café -->
+    <div class="painel amarelo">
+      <h2>☕ Pendentes no Café com Novos Membros</h2>
+      <div id="cafeLista" class="cafe-lista">
+        <span class="sem-pendencias">Carregando...</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input type="text" id="busca" placeholder="🔍 Buscar por nome, email ou telefone..." />
+    <select id="filtroStatus">
+      <option value="">Todos os status</option>
+      <option value="ativo">Ativo</option>
+      <option value="inativo">Inativo</option>
+      <option value="visitante">Visitante</option>
+      <option value="liderança">Liderança</option>
+    </select>
+    <select id="filtroMinisterio">
+      <option value="">Todos os ministérios</option>
+    </select>
+  </div>
+
+  <!-- Tabela -->
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº Reg.</th>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Status</th>
+          <th>Ministério</th>
+          <th>Membro desde</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaCorpo">
+        <tr><td colspan="8" class="loading">Carregando membros...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-fechar" id="modalFechar">✕</button>
+    <h2>Ficha do Membro</h2>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJlvtd8nMHJ74s9fnf9nXjKIAFls4E-eY",
+    authDomain: "imes-membros.firebaseapp.com",
+    projectId: "imes-membros",
+    storageBucket: "imes-membros.firebasestorage.app",
+    messagingSenderId: "101731280105",
+    appId: "1:101731280105:web:de733e85d71a8aedaf3c78"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let todosMembros = [];
+
+  function formatarData(str) {
+    if (!str) return '—';
+    const partes = str.split('-');
+    if (partes.length !== 3) return str;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+  function gerarNumReg(index) {
+    return String(index + 1).padStart(4, '0');
+  }
+
+  function aniversarioNaSemana(nascimento) {
+    if (!nascimento) return false;
+    const hoje = new Date();
+    const inicioSemana = new Date(hoje);
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    inicioSemana.setHours(0,0,0,0);
+    const fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(inicioSemana.getDate() + 6);
+    fimSemana.setHours(23,59,59,999);
+    const partes = nascimento.split('-').map(Number);
+    const dataAniv = new Date(hoje.getFullYear(), partes[1] - 1, partes[2]);
+    return dataAniv >= inicioSemana && dataAniv <= fimSemana;
+  }
+
+  async function carregarMembros() {
+    try {
+      const snap = await db.collection('membros').get();
+      todosMembros = [];
+      snap.forEach(doc => {
+        todosMembros.push({ id: doc.id, ...doc.data() });
+      });
+
+      todosMembros.sort((a, b) => (a.criadoEm || '').localeCompare(b.criadoEm || ''));
+
+      for (let i = 0; i < todosMembros.length; i++) {
+        if (!todosMembros[i].numRegistro) {
+          const numReg = gerarNumReg(i);
+          todosMembros[i].numRegistro = numReg;
+          await db.collection('membros').doc(todosMembros[i].id).update({ numRegistro: numReg });
+        }
+      }
+
+      atualizarCards();
+      atualizarAniversarios();
+      atualizarCafePendentes();
+      atualizarMinisteriosFiltro();
+      renderizarTabela(todosMembros);
+
+    } catch (erro) {
+      console.error('Erro ao carregar:', erro);
+      document.getElementById('tabelaCorpo').innerHTML =
+        `<tr><td colspan="8" class="loading" style="color:red;">Erro: ${erro.message}</td></tr>`;
+    }
+  }
+
+  function atualizarCards() {
+    const semCafe = todosMembros.filter(m => !m.participouCafe);
+    document.getElementById('totalMembros').textContent = todosMembros.length;
+    document.getElementById('totalAtivos').textContent = todosMembros.filter(m => m.status === 'ativo').length;
+    document.getElementById('totalVisitantes').textContent = todosMembros.filter(m => m.status === 'visitante').length;
+    document.getElementById('totalLideranca').textContent = todosMembros.filter(m => m.status === 'liderança').length;
+    document.getElementById('totalSemCafe').textContent = semCafe.length;
+  }
+
+  function atualizarAniversarios() {
+    const lista = document.getElementById('aniversariosLista');
+    const aniversariantes = todosMembros.filter(m => aniversarioNaSemana(m.nascimento));
+
+    if (aniversariantes.length === 0) {
+      lista.innerHTML = '<span class="sem-pendencias">Nenhum aniversariante essa semana 🎉</span>';
+      return;
+    }
+
+    lista.innerHTML = aniversariantes.map(m => `
+      <div class="aniv-card">
+        <div class="aniv-nome">🎂 ${m.nome}</div>
+        <div class="aniv-data">📅 ${formatarData(m.nascimento)}</div>
+        <div class="aniv-contato">
+          <a href="https://wa.me/55${(m.telefone || '').replace(/\D/g,'')}" target="_blank">📱 ${m.telefone || '—'}</a>
+          <a href="mailto:${m.email}">✉️ ${m.email || '—'}</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function atualizarCafePendentes() {
+    const lista = document.getElementById('cafeLista');
+    const pendentes = todosMembros.filter(m => !m.participouCafe);
+
+    if (pendentes.length === 0) {
+      lista.innerHTML = '<span class="sem-pendencias">Todos participaram do café! ✅</span>';
+      return;
+    }
+
+    lista.innerHTML = pendentes.map(m => {
+      const tel = (m.telefone || '').replace(/\D/g,'');
+      const msg = encodeURIComponent(`Olá ${m.nome}! Gostaríamos de te convidar para o nosso Café com Novos Membros da IME Cosmópolis. Será uma ótima oportunidade de nos conhecermos melhor!`);
+      return `
+        <div class="cafe-item">
+          <div>
+            <div class="cafe-nome">${m.nome}</div>
+            <div class="cafe-contato">
+              <a href="https://wa.me/55${tel}?text=${msg}" target="_blank">📱 ${m.telefone || '—'}</a>
+              <a href="mailto:${m.email}?subject=Convite%20Café%20com%20Novos%20Membros&body=Olá%20${encodeURIComponent(m.nome)}!%20Gostaríamos%20de%20te%20convidar%20para%20o%20Café%20com%20Novos%20Membros%20da%20IME%20Cosmópolis.">✉️ ${m.email || '—'}</a>
+            </div>
+          </div>
+          <a class="btn-convidar" href="https://wa.me/55${tel}?text=${msg}" target="_blank">📲 Convidar</a>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function atualizarMinisteriosFiltro() {
+    const ministerios = [...new Set(todosMembros.map(m => m.funcao).filter(Boolean))];
+    const sel = document.getElementById('filtroMinisterio');
+    ministerios.forEach(min => {
+      const opt = document.createElement('option');
+      opt.value = min;
+      opt.textContent = min;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderizarTabela(membros) {
+    const corpo = document.getElementById('tabelaCorpo');
+    if (membros.length === 0) {
+      corpo.innerHTML = '<tr><td colspan="8" class="loading">Nenhum membro encontrado.</td></tr>';
+      return;
+    }
+
+    corpo.innerHTML = membros.map(m => `
+      <tr>
+        <td class="reg-num">#${m.numRegistro || '—'}</td>
+        <td><strong>${m.nome || '—'}</strong></td>
+        <td>${m.telefone || '—'}</td>
+        <td>${m.email || '—'}</td>
+        <td><span class="badge ${m.status || ''}">${m.status || '—'}</span></td>
+        <td>${m.funcao || '—'}</td>
+        <td>${formatarData(m.membroDesde)}</td>
+        <td>
+          <button class="btn-ver" onclick="verMembro('${m.id}')">Ver</button>
+          <button class="btn-excluir" onclick="excluirMembro('${m.id}', '${m.nome}')">Excluir</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function filtrar() {
+    const busca = document.getElementById('busca').value.toLowerCase();
+    const status = document.getElementById('filtroStatus').value;
+    const ministerio = document.getElementById('filtroMinisterio').value;
+
+    const filtrados = todosMembros.filter(m => {
+      const texto = `${m.nome} ${m.email} ${m.telefone}`.toLowerCase();
+      return (!busca || texto.includes(busca)) &&
+             (!status || m.status === status) &&
+             (!ministerio || m.funcao === ministerio);
+    });
+
+    renderizarTabela(filtrados);
+  }
+
+  document.getElementById('busca').addEventListener('input', filtrar);
+  document.getElementById('filtroStatus').addEventListener('change', filtrar);
+  document.getElementById('filtroMinisterio').addEventListener('change', filtrar);
+
+  window.verMembro = function(id) {
+    const m = todosMembros.find(x => x.id === id);
+    if (!m) return;
+
+    document.getElementById('modalBody').innerHTML = `
+      <div class="num-registro-modal">Nº de Registro: #${m.numRegistro || '—'}</div>
+      <div class="modal-grid">
+        <div class="modal-campo full">
+          <span>Nome Completo</span>
+          <span>${m.nome || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Data de Nascimento</span>
+          <span>${formatarData(m.nascimento)}</span>
+        </div>
+        <div class="modal-campo">
+          <span>CPF</span>
+          <span>${m.cpf || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Telefone</span>
+          <span>${m.telefone || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>E-mail</span>
+          <span>${m.email || '—'}</span>
+        </div>
+        <div class="modal-campo full">
+          <span>Endereço</span>
+          <span>${m.endereco || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Status</span>
+          <span><span class="badge ${m.status || ''}">${m.status || '—'}</span></span>
+        </div>
+        <div class="modal-campo">
+          <span>Função / Ministério</span>
+          <span>${m.funcao || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Membro desde</span>
+          <span>${formatarData(m.membroDesde)}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Igreja de Origem</span>
+          <span>${m.igrejaOrigem || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Café com Novos Membros</span>
+          <span>${m.participouCafe ? '✅ Sim' : '❌ Não'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Data do Café</span>
+          <span>${formatarData(m.dataCafe)}</span>
+        </div>
+        <div class="modal-campo full">
+          <span>Observações</span>
+          <span>${m.obs || '—'}</span>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('modalOverlay').classList.add('aberto');
+  };
+
+  document.getElementById('modalFechar').addEventListener('click', () => {
+    document.getElementById('modalOverlay').classList.remove('aberto');
+  });
+
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modalOverlay')) {
+      document.getElementById('modalOverlay').classList.remove('aberto');
+    }
+  });
+
+  window.excluirMembro = async function(id, nome) {
+    if (!confirm(`Tem certeza que deseja excluir o cadastro de ${nome}?`)) return;
+    await db.collection('membros').doc(id).delete();
+    todosMembros = todosMembros.filter(m => m.id !== id);
+    atualizarCards();
+    atualizarAniversarios();
+    atualizarCafePendentes();
+    renderizarTabela(todosMembros);
+  };
+
+  carregarMembros();
+</script>
+</body>
+</html>
