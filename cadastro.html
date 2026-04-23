@@ -183,22 +183,42 @@
       cursor: pointer;
     }
 
-    .btn-enviar {
-      width: 100%;
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .btn-enviar,
+    .btn-cancelar {
+      flex: 1;
       padding: 14px;
-      background: #1a1a2e;
-      color: white;
-      border: none;
       border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 25px;
       transition: background 0.2s;
+    }
+
+    .btn-enviar {
+      background: #1a1a2e;
+      color: white;
+      border: none;
     }
 
     .btn-enviar:hover {
       background: #2d2d5e;
+    }
+
+    .btn-cancelar {
+      background: #f0f0f0;
+      color: #555;
+      border: 1px solid #ccc;
+    }
+
+    .btn-cancelar:hover {
+      background: #e0e0e0;
     }
 
     .msg {
@@ -222,10 +242,23 @@
       border: 1px solid #f5c6cb;
     }
 
+    .num-registro-display {
+      text-align: center;
+      background: #f0f4ff;
+      border: 1px solid #c5d5f5;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #4a90e2;
+    }
+
     @media (max-width: 500px) {
       .container { padding: 25px 20px; }
       .campo { min-width: 100%; }
       .tooltip-box { width: 220px; }
+      .form-actions { flex-direction: column; }
     }
   </style>
 </head>
@@ -234,9 +267,13 @@
 
   <div class="header-form">
     <img src="logo.png" alt="Logo IME Cosmópolis" />
-    <h1>IME Cosmópolis</h1>
+    <h1 id="formTitle">IME Cosmópolis</h1>
   </div>
-  <p class="subtitulo">Igreja Movimento do Espírito Santo — Cadastro de Membro</p>
+  <p class="subtitulo" id="formSubtitle">Igreja Movimento do Espírito Santo — Cadastro de Membro</p>
+
+  <div id="numRegistroDisplay" class="num-registro-display" style="display: none;">
+    Nº de Registro: <span id="numRegistroValue"></span>
+  </div>
 
   <div id="msg" class="msg"></div>
 
@@ -336,12 +373,15 @@
     </div>
   </div>
 
-  <button class="btn-enviar" id="btnEnviar">Enviar Cadastro</button>
+  <div class="form-actions">
+    <button class="btn-enviar" id="btnSalvar">Enviar Cadastro</button>
+    <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
+  </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCJlvtd8nMHJ74s9fnf9nXjKIAFls4E-eY",
@@ -355,14 +395,73 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  let membroIdParaEdicao = null; // Variável para armazenar o ID do membro em edição
+  let membroOriginal = null; // Para armazenar os dados originais do membro em edição
+
   function mostrarMsg(texto, tipo) {
     const msg = document.getElementById('msg');
     msg.textContent = texto;
     msg.className = 'msg ' + tipo;
     msg.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async function enviarCadastro() {
+  function limparFormulario() {
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+      if (el.type === 'checkbox') {
+        el.checked = false;
+      } else {
+        el.value = '';
+      }
+    });
+  }
+
+  // Função para carregar os dados de um membro para edição
+  async function carregarMembroParaEdicao(id) {
+    try {
+      const docRef = doc(db, 'membros', id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        membroOriginal = { id: docSnap.id, ...docSnap.data() }; // Guarda os dados originais
+        const membro = membroOriginal;
+
+        document.getElementById('nome').value = membro.nome || '';
+        document.getElementById('nascimento').value = membro.nascimento || '';
+        document.getElementById('cpf').value = membro.cpf || '';
+        document.getElementById('telefone').value = membro.telefone || '';
+        document.getElementById('email').value = membro.email || '';
+        document.getElementById('endereco').value = membro.endereco || '';
+        document.getElementById('status').value = membro.status || '';
+        document.getElementById('funcao').value = membro.funcao || '';
+        document.getElementById('membroDesde').value = membro.membroDesde || '';
+        document.getElementById('igrejaOrigem').value = membro.igrejaOrigem || '';
+        document.getElementById('obs').value = membro.obs || '';
+        document.getElementById('participouCafe').checked = membro.participouCafe || false;
+        document.getElementById('dataCafe').value = membro.dataCafe || '';
+
+        // Atualiza o título e subtítulo para o modo de edição
+        document.getElementById('formTitle').textContent = 'Editar Membro';
+        document.getElementById('formSubtitle').textContent = 'Igreja Movimento do Espírito Santo — Edição de Cadastro';
+        document.getElementById('btnSalvar').textContent = 'Atualizar Cadastro';
+
+        // Exibe o número de registro
+        document.getElementById('numRegistroValue').textContent = membro.numRegistro || 'N/A';
+        document.getElementById('numRegistroDisplay').style.display = 'block';
+
+      } else {
+        mostrarMsg('Membro não encontrado para edição.', 'erro');
+        console.error("Nenhum documento encontrado com o ID:", id);
+        // Redireciona de volta para o dashboard ou cadastro de novo membro
+        setTimeout(() => window.location.href = 'dashboard.html', 3000);
+      }
+    } catch (e) {
+      mostrarMsg('Erro ao carregar dados do membro para edição.', 'erro');
+      console.error("Erro ao carregar membro:", e);
+    }
+  }
+
+  async function salvarMembro() {
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -373,14 +472,17 @@
       return;
     }
 
-    // --- VERIFICAÇÃO DE DUPLICIDADE ---
+    // --- VERIFICAÇÃO DE DUPLICIDADE (ajustada para edição) ---
     try {
       // Verifica por e-mail
       const qEmail = query(collection(db, 'membros'), where('email', '==', email));
       const querySnapshotEmail = await getDocs(qEmail);
       if (!querySnapshotEmail.empty) {
-        mostrarMsg('Erro: Já existe um membro cadastrado com este e-mail.', 'erro');
-        return;
+        // Se estiver editando, permite que o próprio membro tenha seu e-mail
+        if (!(membroIdParaEdicao && querySnapshotEmail.docs[0].id === membroIdParaEdicao)) {
+          mostrarMsg('Erro: Já existe outro membro cadastrado com este e-mail.', 'erro');
+          return;
+        }
       }
 
       // Verifica por CPF (se preenchido)
@@ -388,8 +490,11 @@
         const qCpf = query(collection(db, 'membros'), where('cpf', '==', cpf));
         const querySnapshotCpf = await getDocs(qCpf);
         if (!querySnapshotCpf.empty) {
-          mostrarMsg('Erro: Já existe um membro cadastrado com este CPF.', 'erro');
-          return;
+          // Se estiver editando, permite que o próprio membro tenha seu CPF
+          if (!(membroIdParaEdicao && querySnapshotCpf.docs[0].id === membroIdParaEdicao)) {
+            mostrarMsg('Erro: Já existe outro membro cadastrado com este CPF.', 'erro');
+            return;
+          }
         }
       }
     } catch (e) {
@@ -399,7 +504,7 @@
     }
     // --- FIM DA VERIFICAÇÃO DE DUPLICIDADE ---
 
-    const dados = {
+    const dadosMembro = {
       nome,
       nascimento: document.getElementById('nascimento').value,
       telefone,
@@ -413,23 +518,56 @@
       obs: document.getElementById('obs').value.trim(),
       participouCafe: document.getElementById('participouCafe').checked,
       dataCafe: document.getElementById('dataCafe').value,
-      origem: 'formulario-publico',
-      criadoEm: new Date().toISOString()
     };
 
     try {
-      await addDoc(collection(db, 'membros'), dados);
-      mostrarMsg('✅ Cadastro realizado com sucesso! Seja bem-vindo à IME Cosmópolis!', 'sucesso');
-      document.querySelectorAll('input, select, textarea').forEach(el => el.value = '');
-      document.getElementById('participouCafe').checked = false;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (membroIdParaEdicao) {
+        // Modo de Edição: Atualiza o documento existente
+        await updateDoc(doc(db, 'membros', membroIdParaEdicao), {
+          ...dadosMembro,
+          atualizadoEm: new Date().toISOString() // Adiciona data de atualização
+        });
+        mostrarMsg('✅ Cadastro atualizado com sucesso!', 'sucesso');
+      } else {
+        // Modo de Novo Cadastro: Adiciona um novo documento
+        await addDoc(collection(db, 'membros'), {
+          ...dadosMembro,
+          origem: 'formulario-publico',
+          criadoEm: new Date().toISOString()
+        });
+        mostrarMsg('✅ Cadastro realizado com sucesso! Seja bem-vindo à IME Cosmópolis!', 'sucesso');
+        limparFormulario(); // Limpa o formulário apenas para novos cadastros
+      }
+      // Opcional: Redirecionar para o dashboard após sucesso
+      setTimeout(() => window.location.href = 'dashboard.html', 2000);
+
     } catch (e) {
-      mostrarMsg('Erro ao enviar cadastro. Tente novamente.', 'erro');
+      mostrarMsg('Erro ao salvar cadastro. Tente novamente.', 'erro');
       console.error(e);
     }
   }
 
-  document.getElementById('btnEnviar').addEventListener('click', enviarCadastro);
+  // Event Listeners
+  document.getElementById('btnSalvar').addEventListener('click', salvarMembro);
+  document.getElementById('btnCancelar').addEventListener('click', () => {
+    window.location.href = 'dashboard.html'; // Volta para o dashboard
+  });
+
+  // Lógica de inicialização ao carregar a página
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    if (id) {
+      membroIdParaEdicao = id;
+      carregarMembroParaEdicao(id);
+    } else {
+      // Modo de novo cadastro
+      document.getElementById('formTitle').textContent = 'Novo Cadastro de Membro';
+      document.getElementById('formSubtitle').textContent = 'Igreja Movimento do Espírito Santo — Preencha os dados abaixo';
+      document.getElementById('btnSalvar').textContent = 'Enviar Cadastro';
+    }
+  });
 </script>
 </body>
 </html>
