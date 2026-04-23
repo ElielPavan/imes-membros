@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IME Cosmópolis - Dashboard</title>
   <style>
+    /* Estilos existentes do dashboard */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -71,22 +72,110 @@
       background: #357ABD;
     }
 
-    .loading-message {
-      text-align: center;
-      font-size: 1.1rem;
-      color: #555;
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
       margin-top: 30px;
     }
 
+    .card {
+      background: #fdfdfd;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    }
+
+    .card h2 {
+      color: #1a1a2e;
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+    }
+
+    .card p {
+      color: #555;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .card .value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #4a90e2;
+      margin-top: 10px;
+    }
+
+    .card.aniversariantes ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .card.aniversariantes li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .card.aniversariantes li:last-child {
+      border-bottom: none;
+    }
+
+    .card.convite button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .card.convite button:hover {
+      background: #218838;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 25px 20px; }
+      .dashboard-grid { gap: 20px; }
+      .card h2 { font-size: 1.2rem; }
+      .card .value { font-size: 2rem; }
+    }
+
+    /* Novos estilos para a seção de gerenciamento de membros */
+    .members-management-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .members-management-section h2 {
+      text-align: center;
+      color: #1a1a2e;
+      font-size: 1.6rem;
+      margin-bottom: 25px;
+    }
+
     .members-table-container {
-      margin-top: 30px;
-      overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+      margin-top: 20px;
+      overflow-x: auto;
     }
 
     .members-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
       background: #fff;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       border-radius: 8px;
@@ -115,9 +204,9 @@
       background: #f5f5f5;
     }
 
-    .members-table .btn-editar {
+    .members-table .btn-visualizar-editar {
       padding: 6px 12px;
-      background: #28a745; /* Verde */
+      background: #007bff; /* Azul */
       color: white;
       border: none;
       border-radius: 5px;
@@ -126,31 +215,19 @@
       transition: background 0.2s;
     }
 
-    .members-table .btn-editar:hover {
-      background: #218838;
+    .members-table .btn-visualizar-editar:hover {
+      background: #0056b3;
     }
 
     .no-members-message {
       text-align: center;
       color: #777;
       font-size: 1.1rem;
-      margin-top: 40px;
+      margin-top: 20px;
       padding: 20px;
       border: 1px dashed #ccc;
       border-radius: 8px;
       background: #fdfdfd;
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 25px 20px; }
-      .members-table th, .members-table td {
-        padding: 10px;
-        font-size: 0.9rem;
-      }
-      .members-table .btn-editar {
-        padding: 5px 10px;
-        font-size: 0.8rem;
-      }
     }
   </style>
 </head>
@@ -161,14 +238,43 @@
     <img src="logo.png" alt="Logo IME Cosmópolis" />
     <h1>Dashboard de Membros</h1>
   </div>
-  <p class="subtitulo">Gerencie os membros da IME Cosmópolis</p>
+  <p class="subtitulo">Visão geral e gerenciamento dos membros da IME Cosmópolis</p>
 
   <a href="cadastro.html" class="btn-cadastro">Novo Cadastro</a>
 
-  <div class="members-table-container">
-    <p id="loadingMessage" class="loading-message">Carregando membros...</p>
-    <div id="membersList">
-      <!-- A lista de membros será carregada aqui -->
+  <div class="dashboard-grid">
+    <div class="card">
+      <h2>Membros Ativos</h2>
+      <p class="value" id="membrosAtivos">0</p>
+    </div>
+
+    <div class="card">
+      <h2>Membros em Transferência</h2>
+      <p class="value" id="membrosTransferencia">0</p>
+    </div>
+
+    <div class="card aniversariantes">
+      <h2>Aniversariantes da Semana</h2>
+      <ul id="listaAniversariantes">
+        <li>Nenhum aniversariante esta semana.</li>
+      </ul>
+    </div>
+
+    <div class="card convite">
+      <h2>Convite para o Café</h2>
+      <p>Envie um convite especial para o nosso próximo café!</p>
+      <button>Enviar Convite</button>
+    </div>
+  </div>
+
+  <!-- Nova seção para gerenciamento de membros -->
+  <div class="members-management-section">
+    <h2>Gerenciamento de Membros</h2>
+    <div class="members-table-container">
+      <p id="loadingMembersMessage" class="no-members-message">Carregando lista de membros...</p>
+      <div id="membersList">
+        <!-- A lista de membros será carregada aqui -->
+      </div>
     </div>
   </div>
 
@@ -176,7 +282,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCJlvtd8nMHJ74s9fnf9nXjKIAFls4E-eY",
@@ -190,18 +296,66 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function carregarMembros() {
-    const loadingMessage = document.getElementById('loadingMessage');
-    const membersListDiv = document.getElementById('membersList');
-    membersListDiv.innerHTML = ''; // Limpa a lista antes de carregar
-
+  async function carregarDadosDashboard() {
     try {
       const membrosCollection = collection(db, 'membros');
       const querySnapshot = await getDocs(membrosCollection);
 
+      let totalAtivos = 0;
+      let totalTransferencia = 0;
+      const aniversariantes = [];
+      const hoje = new Date();
+      const diaDaSemana = hoje.getDay(); // 0 = Domingo, 1 = Segunda...
+      const inicioSemana = new Date(hoje);
+      inicioSemana.setDate(hoje.getDate() - diaDaSemana); // Início da semana (Domingo)
+      const fimSemana = new Date(inicioSemana);
+      fimSemana.setDate(inicioSemana.getDate() + 6); // Fim da semana (Sábado)
+
+      // --- Lógica para os cards do dashboard ---
+      querySnapshot.forEach((doc) => {
+        const membro = doc.data();
+
+        // Contagem de membros ativos e em transferência
+        if (membro.status === 'Ativo') {
+          totalAtivos++;
+        } else if (membro.status === 'Em Transferência') {
+          totalTransferencia++;
+        }
+
+        // Aniversariantes da semana
+        if (membro.dataNascimento) {
+          const [ano, mes, dia] = membro.dataNascimento.split('-').map(Number);
+          const dataNascimentoEsteAno = new Date(hoje.getFullYear(), mes - 1, dia);
+
+          if (dataNascimentoEsteAno >= inicioSemana && dataNascimentoEsteAno <= fimSemana) {
+            aniversariantes.push(membro.nome);
+          }
+        }
+      });
+
+      document.getElementById('membrosAtivos').textContent = totalAtivos;
+      document.getElementById('membrosTransferencia').textContent = totalTransferencia;
+
+      const listaAniversariantes = document.getElementById('listaAniversariantes');
+      listaAniversariantes.innerHTML = '';
+      if (aniversariantes.length > 0) {
+        aniversariantes.forEach(nome => {
+          const li = document.createElement('li');
+          li.textContent = nome;
+          listaAniversariantes.appendChild(li);
+        });
+      } else {
+        listaAniversariantes.innerHTML = '<li>Nenhum aniversariante esta semana.</li>';
+      }
+
+      // --- Lógica para a nova seção de gerenciamento de membros ---
+      const loadingMembersMessage = document.getElementById('loadingMembersMessage');
+      const membersListDiv = document.getElementById('membersList');
+      membersListDiv.innerHTML = ''; // Limpa a lista antes de carregar
+
       if (querySnapshot.empty) {
         membersListDiv.innerHTML = '<p class="no-members-message">Nenhum membro cadastrado ainda.</p>';
-        loadingMessage.style.display = 'none';
+        loadingMembersMessage.style.display = 'none';
         return;
       }
 
@@ -229,7 +383,7 @@
             <td>${membro.telefone || 'N/A'}</td>
             <td>${membro.status || 'N/A'}</td>
             <td>
-              <button class="btn-editar" onclick="editarMembro('${membroId}')">Editar</button>
+              <button class="btn-visualizar-editar" onclick="visualizarEditarMembro('${membroId}')">Visualizar/Editar</button>
             </td>
           </tr>
         `;
@@ -240,23 +394,24 @@
         </table>
       `;
       membersListDiv.innerHTML = tableHTML;
-      loadingMessage.style.display = 'none';
+      loadingMembersMessage.style.display = 'none';
+
 
     } catch (e) {
-      console.error("Erro ao carregar membros: ", e);
-      membersListDiv.innerHTML = '<p class="no-members-message" style="color: red;">Erro ao carregar membros. Verifique sua conexão ou tente novamente.</p>';
-      loadingMessage.style.display = 'none';
+      console.error("Erro ao carregar dados do dashboard: ", e);
+      document.getElementById('loadingMembersMessage').textContent = 'Erro ao carregar membros. Verifique sua conexão ou tente novamente.';
+      document.getElementById('loadingMembersMessage').style.color = 'red';
+      // Opcional: exibir uma mensagem de erro na interface
     }
   }
 
-  // Esta função será implementada na próxima etapa
-  window.editarMembro = function(id) {
-    alert('Você clicou em editar o membro com ID: ' + id);
-    // Aqui vamos redirecionar para uma página de edição ou abrir um modal
+  // Esta função agora redireciona para cadastro.html com o ID do membro
+  window.visualizarEditarMembro = function(id) {
+    window.location.href = 'cadastro.html?id=' + id;
   };
 
-  // Carrega os membros quando a página é carregada
-  document.addEventListener('DOMContentLoaded', carregarMembros);
+  // Carrega os dados do dashboard e a lista de membros quando a página é carregada
+  document.addEventListener('DOMContentLoaded', carregarDadosDashboard);
 </script>
 </body>
 </html>
