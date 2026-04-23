@@ -341,7 +341,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCJlvtd8nMHJ74s9fnf9nXjKIAFls4E-eY",
@@ -366,18 +366,45 @@
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
     const email = document.getElementById('email').value.trim();
+    const cpf = document.getElementById('cpf').value.trim();
 
     if (!nome || !telefone || !email) {
       mostrarMsg('Por favor, preencha os campos obrigatórios: Nome, Telefone e E-mail.', 'erro');
       return;
     }
 
+    // --- VERIFICAÇÃO DE DUPLICIDADE ---
+    try {
+      // Verifica por e-mail
+      const qEmail = query(collection(db, 'membros'), where('email', '==', email));
+      const querySnapshotEmail = await getDocs(qEmail);
+      if (!querySnapshotEmail.empty) {
+        mostrarMsg('Erro: Já existe um membro cadastrado com este e-mail.', 'erro');
+        return;
+      }
+
+      // Verifica por CPF (se preenchido)
+      if (cpf) {
+        const qCpf = query(collection(db, 'membros'), where('cpf', '==', cpf));
+        const querySnapshotCpf = await getDocs(qCpf);
+        if (!querySnapshotCpf.empty) {
+          mostrarMsg('Erro: Já existe um membro cadastrado com este CPF.', 'erro');
+          return;
+        }
+      }
+    } catch (e) {
+      mostrarMsg('Erro ao verificar duplicidade. Tente novamente.', 'erro');
+      console.error("Erro ao verificar duplicidade:", e);
+      return;
+    }
+    // --- FIM DA VERIFICAÇÃO DE DUPLICIDADE ---
+
     const dados = {
       nome,
       nascimento: document.getElementById('nascimento').value,
       telefone,
       email,
-      cpf: document.getElementById('cpf').value.trim(),
+      cpf,
       endereco: document.getElementById('endereco').value.trim(),
       status: document.getElementById('status').value,
       funcao: document.getElementById('funcao').value.trim(),
