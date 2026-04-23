@@ -5,284 +5,491 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IME Cosmópolis - Dashboard</title>
   <style>
-    /* Estilos existentes do dashboard */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f0f2f5;
       color: #333;
-      padding: 30px 15px;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 12px;
-      padding: 35px 40px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-
-    .header-dashboard {
+    header {
+      background: #1a1a2e;
+      color: white;
+      padding: 18px 30px;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+    }
+
+    header span {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .main {
+      padding: 25px 30px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Cards de resumo */
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
       margin-bottom: 30px;
     }
 
-    .header-dashboard img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #1a1a2e;
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
-
-    .subtitulo {
-      text-align: center;
-      color: #666;
-      font-size: 1rem;
-      margin-bottom: 20px;
-    }
-
-    .btn-cadastro {
-      display: block;
-      width: fit-content;
-      margin: 20px auto;
-      padding: 12px 25px;
-      background: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-
-    .btn-cadastro:hover {
-      background: #357ABD;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
-    }
-
     .card {
-      background: #fdfdfd;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      text-align: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 25px;
+      flex: 1;
+      min-width: 180px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 4px solid #4a90e2;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
-    }
+    .card.verde { border-left-color: #28a745; }
+    .card.laranja { border-left-color: #fd7e14; }
+    .card.roxo { border-left-color: #6f42c1; }
 
-    .card h2 {
-      color: #1a1a2e;
-      font-size: 1.4rem;
-      margin-bottom: 15px;
+    .card h3 {
+      font-size: 0.8rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
     }
 
     .card p {
-      color: #555;
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    .card .value {
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 700;
-      color: #4a90e2;
-      margin-top: 10px;
-    }
-
-    .card.aniversariantes ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 15px;
-      text-align: left;
-    }
-
-    .card.aniversariantes li {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      color: #333;
-      font-size: 1rem;
-    }
-
-    .card.aniversariantes li:last-child {
-      border-bottom: none;
-    }
-
-    .card.convite button {
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 20px;
-    }
-
-    .card.convite button:hover {
-      background: #218838;
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 25px 20px; }
-      .dashboard-grid { gap: 20px; }
-      .card h2 { font-size: 1.2rem; }
-      .card .value { font-size: 2rem; }
-    }
-
-    /* Novos estilos para a seção de gerenciamento de membros */
-    .members-management-section {
-      margin-top: 40px;
-      padding-top: 30px;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    .members-management-section h2 {
-      text-align: center;
       color: #1a1a2e;
-      font-size: 1.6rem;
-      margin-bottom: 25px;
     }
 
-    .members-table-container {
-      margin-top: 20px;
+    /* Aniversariantes e Café */
+    .secao-lista {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      margin-bottom: 30px;
+      border-left: 4px solid; /* Cor definida por classe específica */
+    }
+
+    .secao-lista.aniversarios { border-left-color: #e83e8c; }
+    .secao-lista.cafe { border-left-color: #ffc107; } /* Amarelo para café */
+
+
+    .secao-lista h2 {
+      font-size: 1rem;
+      color: #1a1a2e;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lista-itens {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .item-card {
+      background: #fff0f6; /* Cor de fundo para aniversariantes */
+      border: 1px solid #f5c6db; /* Borda para aniversariantes */
+      border-radius: 10px;
+      padding: 14px 18px;
+      min-width: 220px;
+      flex: 1;
+    }
+
+    .secao-lista.cafe .item-card {
+      background: #fffbe6; /* Cor de fundo para café */
+      border: 1px solid #ffeeba; /* Borda para café */
+    }
+
+    .item-card .nome {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .item-card .data {
+      font-size: 0.82rem;
+      color: #e83e8c; /* Cor para data de aniversário */
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .secao-lista.cafe .item-card .data {
+      color: #d39e00; /* Cor para data de café */
+    }
+
+    .item-card .contato {
+      font-size: 0.83rem;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .item-card .contato a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    .item-card .contato a:hover {
+      text-decoration: underline;
+    }
+
+    .sem-itens {
+      color: #888;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    /* Busca e filtros */
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      padding: 9px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+
+    .toolbar input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* Tabela */
+    .tabela-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
       overflow-x: auto;
     }
 
-    .members-table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      border-radius: 8px;
+      font-size: 0.88rem;
     }
 
-    .members-table th,
-    .members-table td {
-      padding: 12px 15px;
+    thead {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    thead th {
+      padding: 13px 15px;
       text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-
-    .members-table th {
-      background: #f8f8f8;
-      color: #1a1a2e;
       font-weight: 600;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
-    .members-table tr:last-child td {
-      border-bottom: none;
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.15s;
     }
 
-    .members-table tbody tr:hover {
-      background: #f5f5f5;
+    tbody tr:hover {
+      background: #f8f9ff;
     }
 
-    .members-table .btn-visualizar-editar {
-      padding: 6px 12px;
-      background: #007bff; /* Azul */
+    tbody td {
+      padding: 12px 15px;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge.ativo { background: #d4edda; color: #155724; }
+    .badge.inativo { background: #f8d7da; color: #721c24; }
+    .badge.visitante { background: #fff3cd; color: #856404; }
+    .badge.liderança { background: #cce5ff; color: #004085; }
+
+    .btn-ver {
+      background: #1a1a2e;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
       cursor: pointer;
-      font-size: 0.85rem;
       transition: background 0.2s;
     }
 
-    .members-table .btn-visualizar-editar:hover {
-      background: #0056b3;
+    .btn-ver:hover { background: #2d2d5e; }
+
+    .btn-excluir {
+      background: #f8d7da;
+      color: #721c24;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-left: 5px;
+      transition: background 0.2s;
     }
 
-    .no-members-message {
-      text-align: center;
-      color: #777;
-      font-size: 1.1rem;
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px dashed #ccc;
+    .btn-excluir:hover { background: #f5c6cb; }
+
+    .reg-num {
+      font-weight: 700;
+      color: #4a90e2;
+      font-size: 0.85rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.aberto {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      padding: 30px;
+      max-width: 620px;
+      width: 95%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal h2 {
+      color: #1a1a2e;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #e8e8e8;
+      padding-bottom: 12px;
+    }
+
+    .modal-fechar {
+      position: absolute;
+      top: 15px; right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .modal-campo {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-campo.full {
+      grid-column: 1 / -1;
+    }
+
+    .modal-campo span:first-child {
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+
+    .modal-campo span:last-child {
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      font-weight: 600;
+    }
+
+    .num-registro-modal {
+      background: #f0f4ff;
+      border: 1px solid #c5d5f5;
       border-radius: 8px;
-      background: #fdfdfd;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #4a90e2;
+      text-align: center;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+      font-style: italic;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .btn-editar-modal {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-editar-modal:hover {
+      background: #357ABD;
+    }
+
+    @media (max-width: 600px) {
+      .main { padding: 15px; }
+      .modal-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-<div class="container">
 
-  <div class="header-dashboard">
-    <img src="logo.png" alt="Logo IME Cosmópolis" />
-    <h1>Dashboard de Membros</h1>
-  </div>
-  <p class="subtitulo">Visão geral e gerenciamento dos membros da IME Cosmópolis</p>
+<header>
+  <h1>⛪ IME Cosmópolis — Dashboard</h1>
+  <span>Igreja Movimento do Espírito Santo</span>
+</header>
 
-  <a href="cadastro.html" class="btn-cadastro">Novo Cadastro</a>
+<div class="main">
 
-  <div class="dashboard-grid">
+  <!-- Cards de resumo -->
+  <div class="cards">
     <div class="card">
-      <h2>Membros Ativos</h2>
-      <p class="value" id="membrosAtivos">0</p>
+      <h3>Total de Membros</h3>
+      <p id="totalMembros">—</p>
     </div>
-
-    <div class="card">
-      <h2>Membros em Transferência</h2>
-      <p class="value" id="membrosTransferencia">0</p>
+    <div class="card verde">
+      <h3>Ativos</h3>
+      <p id="totalAtivos">—</p>
     </div>
-
-    <div class="card aniversariantes">
-      <h2>Aniversariantes da Semana</h2>
-      <ul id="listaAniversariantes">
-        <li>Nenhum aniversariante esta semana.</li>
-      </ul>
+    <div class="card laranja">
+      <h3>Visitantes</h3>
+      <p id="totalVisitantes">—</p>
     </div>
-
-    <div class="card convite">
-      <h2>Convite para o Café</h2>
-      <p>Envie um convite especial para o nosso próximo café!</p>
-      <button>Enviar Convite</button>
+    <div class="card roxo">
+      <h3>Liderança</h3>
+      <p id="totalLideranca">—</p>
     </div>
   </div>
 
-  <!-- Nova seção para gerenciamento de membros -->
-  <div class="members-management-section">
-    <h2>Gerenciamento de Membros</h2>
-    <div class="members-table-container">
-      <p id="loadingMembersMessage" class="no-members-message">Carregando lista de membros...</p>
-      <div id="membersList">
-        <!-- A lista de membros será carregada aqui -->
-      </div>
+  <!-- Aniversariantes da semana -->
+  <div class="secao-lista aniversarios">
+    <h2>🎂 Aniversariantes da Semana</h2>
+    <div id="aniversariosLista" class="lista-itens">
+      <span class="sem-itens">Carregando...</span>
     </div>
+  </div>
+
+  <!-- Membros que não participaram do Café -->
+  <div class="secao-lista cafe">
+    <h2>☕ Membros para Convidar para o Café</h2>
+    <div id="cafeNaoParticipantesLista" class="lista-itens">
+      <span class="sem-itens">Carregando...</span>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input type="text" id="busca" placeholder="🔍 Buscar por nome, email ou telefone..." />
+    <select id="filtroStatus">
+      <option value="">Todos os status</option>
+      <option value="ativo">Ativo</option>
+      <option value="inativo">Inativo</option>
+      <option value="visitante">Visitante</option>
+      <option value="liderança">Liderança</option>
+    </select>
+    <select id="filtroMinisterio">
+      <option value="">Todos os ministérios</option>
+    </select>
+  </div>
+
+  <!-- Tabela -->
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº Reg.</th>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Status</th>
+          <th>Ministério</th>
+          <th>Membro desde</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaCorpo">
+        <tr><td colspan="8" class="loading">Carregando membros...</td></tr>
+      </tbody>
+    </table>
   </div>
 
 </div>
 
+<!-- Modal de detalhes -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalConteudo">
+    <button class="modal-fechar" id="modalFechar">✕</button>
+    <h2 id="modalTitle">Ficha do Membro</h2>
+    <div id="modalBody"></div>
+    <div class="modal-actions">
+      <!-- O botão de editar será inserido aqui dinamicamente -->
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCJlvtd8nMHJ74s9fnf9nXjKIAFls4E-eY",
@@ -296,122 +503,282 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function carregarDadosDashboard() {
-    try {
-      const membrosCollection = collection(db, 'membros');
-      const querySnapshot = await getDocs(membrosCollection);
+  let todosMembros = [];
 
-      let totalAtivos = 0;
-      let totalTransferencia = 0;
-      const aniversariantes = [];
-      const hoje = new Date();
-      const diaDaSemana = hoje.getDay(); // 0 = Domingo, 1 = Segunda...
-      const inicioSemana = new Date(hoje);
-      inicioSemana.setDate(hoje.getDate() - diaDaSemana); // Início da semana (Domingo)
-      const fimSemana = new Date(inicioSemana);
-      fimSemana.setDate(inicioSemana.getDate() + 6); // Fim da semana (Sábado)
-
-      // --- Lógica para os cards do dashboard ---
-      querySnapshot.forEach((doc) => {
-        const membro = doc.data();
-
-        // Contagem de membros ativos e em transferência
-        if (membro.status === 'Ativo') {
-          totalAtivos++;
-        } else if (membro.status === 'Em Transferência') {
-          totalTransferencia++;
-        }
-
-        // Aniversariantes da semana
-        if (membro.dataNascimento) {
-          const [ano, mes, dia] = membro.dataNascimento.split('-').map(Number);
-          const dataNascimentoEsteAno = new Date(hoje.getFullYear(), mes - 1, dia);
-
-          if (dataNascimentoEsteAno >= inicioSemana && dataNascimentoEsteAno <= fimSemana) {
-            aniversariantes.push(membro.nome);
-          }
-        }
-      });
-
-      document.getElementById('membrosAtivos').textContent = totalAtivos;
-      document.getElementById('membrosTransferencia').textContent = totalTransferencia;
-
-      const listaAniversariantes = document.getElementById('listaAniversariantes');
-      listaAniversariantes.innerHTML = '';
-      if (aniversariantes.length > 0) {
-        aniversariantes.forEach(nome => {
-          const li = document.createElement('li');
-          li.textContent = nome;
-          listaAniversariantes.appendChild(li);
-        });
-      } else {
-        listaAniversariantes.innerHTML = '<li>Nenhum aniversariante esta semana.</li>';
-      }
-
-      // --- Lógica para a nova seção de gerenciamento de membros ---
-      const loadingMembersMessage = document.getElementById('loadingMembersMessage');
-      const membersListDiv = document.getElementById('membersList');
-      membersListDiv.innerHTML = ''; // Limpa a lista antes de carregar
-
-      if (querySnapshot.empty) {
-        membersListDiv.innerHTML = '<p class="no-members-message">Nenhum membro cadastrado ainda.</p>';
-        loadingMembersMessage.style.display = 'none';
-        return;
-      }
-
-      let tableHTML = `
-        <table class="members-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>E-mail</th>
-              <th>Telefone</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      querySnapshot.forEach((doc) => {
-        const membro = doc.data();
-        const membroId = doc.id; // ID do documento no Firestore
-        tableHTML += `
-          <tr>
-            <td>${membro.nome || 'N/A'}</td>
-            <td>${membro.email || 'N/A'}</td>
-            <td>${membro.telefone || 'N/A'}</td>
-            <td>${membro.status || 'N/A'}</td>
-            <td>
-              <button class="btn-visualizar-editar" onclick="visualizarEditarMembro('${membroId}')">Visualizar/Editar</button>
-            </td>
-          </tr>
-        `;
-      });
-
-      tableHTML += `
-          </tbody>
-        </table>
-      `;
-      membersListDiv.innerHTML = tableHTML;
-      loadingMembersMessage.style.display = 'none';
-
-
-    } catch (e) {
-      console.error("Erro ao carregar dados do dashboard: ", e);
-      document.getElementById('loadingMembersMessage').textContent = 'Erro ao carregar membros. Verifique sua conexão ou tente novamente.';
-      document.getElementById('loadingMembersMessage').style.color = 'red';
-      // Opcional: exibir uma mensagem de erro na interface
-    }
+  // Formata data de ISO para DD/MM/AAAA
+  function formatarData(str) {
+    if (!str) return '—';
+    const [a, m, d] = str.split('-');
+    if (!a || !m || !d) return str;
+    return `${d}/${m}/${a}`;
   }
 
-  // Esta função agora redireciona para cadastro.html com o ID do membro
-  window.visualizarEditarMembro = function(id) {
-    window.location.href = 'cadastro.html?id=' + id;
+  // Gera número de registro baseado na ordem de criação
+  function gerarNumReg(index) {
+    return String(index + 1).padStart(4, '0');
+  }
+
+  // Verifica se a data de nascimento cai na semana atual
+  function aniversarioNaSemana(nascimento) {
+    if (!nascimento) return false;
+    const hoje = new Date();
+    const inicioSemana = new Date(hoje);
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    const fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(inicioSemana.getDate() + 6);
+
+    const [ano, mes, dia] = nascimento.split('-').map(Number);
+    const anoAtual = hoje.getFullYear();
+
+    const dataAniv = new Date(anoAtual, mes - 1, dia);
+    return dataAniv >= inicioSemana && dataAniv <= fimSemana;
+  }
+
+  // Carrega membros do Firestore
+  async function carregarMembros() {
+    const snap = await getDocs(collection(db, 'membros'));
+    todosMembros = [];
+
+    snap.forEach((docSnap, i) => {
+      todosMembros.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    // Ordena por data de criação para manter número de registro consistente
+    todosMembros.sort((a, b) => {
+      const da = a.criadoEm || '';
+      const db2 = b.criadoEm || '';
+      return da.localeCompare(db2);
+    });
+
+    // Salva número de registro no Firestore se ainda não tiver
+    for (let i = 0; i < todosMembros.length; i++) {
+      if (!todosMembros[i].numRegistro) {
+        const numReg = gerarNumReg(i);
+        todosMembros[i].numRegistro = numReg;
+        await updateDoc(doc(db, 'membros', todosMembros[i].id), { numRegistro: numReg });
+      }
+    }
+
+    atualizarCards();
+    atualizarAniversarios();
+    atualizarCafeNaoParticipantes(); // Nova função
+    atualizarMinisteriosFiltro();
+    renderizarTabela(todosMembros);
+  }
+
+  // Atualiza cards de resumo
+  function atualizarCards() {
+    document.getElementById('totalMembros').textContent = todosMembros.length;
+    document.getElementById('totalAtivos').textContent = todosMembros.filter(m => m.status === 'ativo').length;
+    document.getElementById('totalVisitantes').textContent = todosMembros.filter(m => m.status === 'visitante').length;
+    document.getElementById('totalLideranca').textContent = todosMembros.filter(m => m.status === 'liderança').length;
+  }
+
+  // Exibe aniversariantes da semana
+  function atualizarAniversarios() {
+    const lista = document.getElementById('aniversariosLista');
+    const aniversariantes = todosMembros.filter(m => aniversarioNaSemana(m.nascimento));
+
+    if (aniversariantes.length === 0) {
+      lista.innerHTML = '<span class="sem-itens">Nenhum aniversariante essa semana 🎉</span>';
+      return;
+    }
+
+    lista.innerHTML = aniversariantes.map(m => `
+      <div class="item-card">
+        <div class="nome">🎂 ${m.nome}</div>
+        <div class="data">📅 ${formatarData(m.nascimento)}</div>
+        <div class="contato">
+          <a href="https://wa.me/55${m.telefone ? m.telefone.replace(/\D/g,'') : ''}" target="_blank">📱 ${m.telefone || 'N/A'}</a>
+          <a href="mailto:${m.email || ''}">✉️ ${m.email || 'N/A'}</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // NOVA FUNÇÃO: Exibe membros que não participaram do café
+  function atualizarCafeNaoParticipantes() {
+    const lista = document.getElementById('cafeNaoParticipantesLista');
+    const naoParticipantes = todosMembros.filter(m => !m.participouCafe && m.status === 'ativo'); // Apenas ativos
+
+    if (naoParticipantes.length === 0) {
+      lista.innerHTML = '<span class="sem-itens">Todos os membros ativos participaram do café! 🎉</span>';
+      return;
+    }
+
+    lista.innerHTML = naoParticipantes.map(m => `
+      <div class="item-card">
+        <div class="nome">☕ ${m.nome}</div>
+        <div class="data">Status: ${m.status || 'N/A'}</div>
+        <div class="contato">
+          <a href="https://wa.me/55${m.telefone ? m.telefone.replace(/\D/g,'') : ''}?text=Olá%20${encodeURIComponent(m.nome)}%2C%20gostaríamos%20de%20te%20convidar%20para%20o%20próximo%20Café%20com%20Novos%20Membros%20da%20IME%20Cosmópolis!%20Será%20um%20prazer%20ter%20você%20conosco." target="_blank">
+            📱 Convidar via WhatsApp
+          </a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Preenche filtro de ministérios
+  function atualizarMinisteriosFiltro() {
+    const ministerios = [...new Set(todosMembros.map(m => m.funcao).filter(Boolean))];
+    const sel = document.getElementById('filtroMinisterio');
+    ministerios.forEach(min => {
+      const opt = document.createElement('option');
+      opt.value = min;
+      opt.textContent = min;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Renderiza a tabela
+  function renderizarTabela(membros) {
+    const corpo = document.getElementById('tabelaCorpo');
+    if (membros.length === 0) {
+      corpo.innerHTML = '<tr><td colspan="8" class="loading">Nenhum membro encontrado.</td></tr>';
+      return;
+    }
+
+    corpo.innerHTML = membros.map((m, i) => `
+      <tr>
+        <td class="reg-num">#${m.numRegistro || gerarNumReg(todosMembros.indexOf(m))}</td>
+        <td><strong>${m.nome}</strong></td>
+        <td>${m.telefone || '—'}</td>
+        <td>${m.email || '—'}</td>
+        <td><span class="badge ${m.status || ''}">${m.status || '—'}</span></td>
+        <td>${m.funcao || '—'}</td>
+        <td>${formatarData(m.membroDesde)}</td>
+        <td>
+          <button class="btn-ver" onclick="verMembro('${m.id}')">Ver</button>
+          <button class="btn-excluir" onclick="excluirMembro('${m.id}', '${m.nome}')">Excluir</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // Filtragem
+  function filtrar() {
+    const busca = document.getElementById('busca').value.toLowerCase();
+    const status = document.getElementById('filtroStatus').value;
+    const ministerio = document.getElementById('filtroMinisterio').value;
+
+    const filtrados = todosMembros.filter(m => {
+      const textoBusca = `${m.nome} ${m.email} ${m.telefone}`.toLowerCase();
+      const okBusca = !busca || textoBusca.includes(busca);
+      const okStatus = !status || m.status === status;
+      const okMin = !ministerio || m.funcao === ministerio;
+      return okBusca && okStatus && okMin;
+    });
+
+    renderizarTabela(filtrados);
+  }
+
+  document.getElementById('busca').addEventListener('input', filtrar);
+  document.getElementById('filtroStatus').addEventListener('change', filtrar);
+  document.getElementById('filtroMinisterio').addEventListener('change', filtrar);
+
+  // Ver detalhes do membro
+  window.verMembro = function(id) {
+    const m = todosMembros.find(x => x.id === id);
+    if (!m) return;
+
+    document.getElementById('modalBody').innerHTML = `
+      <div class="num-registro-modal">Nº de Registro: #${m.numRegistro || '—'}</div>
+      <div class="modal-grid">
+        <div class="modal-campo full">
+          <span>Nome Completo</span>
+          <span>${m.nome}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Data de Nascimento</span>
+          <span>${formatarData(m.nascimento)}</span>
+        </div>
+        <div class="modal-campo">
+          <span>CPF</span>
+          <span>${m.cpf || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Telefone</span>
+          <span>${m.telefone || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>E-mail</span>
+          <span>${m.email || '—'}</span>
+        </div>
+        <div class="modal-campo full">
+          <span>Endereço</span>
+          <span>${m.endereco || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Status</span>
+          <span><span class="badge ${m.status || ''}">${m.status || '—'}</span></span>
+        </div>
+        <div class="modal-campo">
+          <span>Função / Ministério</span>
+          <span>${m.funcao || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Membro desde</span>
+          <span>${formatarData(m.membroDesde)}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Igreja de Origem</span>
+          <span>${m.igrejaOrigem || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Café com Novos Membros</span>
+          <span>${m.participouCafe ? '✅ Sim' : '❌ Não'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Data do Café</span>
+          <span>${formatarData(m.dataCafe)}</span>
+        </div>
+        <div class="modal-campo full">
+          <span>Observações</span>
+          <span>${m.obs || '—'}</span>
+        </div>
+        <div class="modal-campo">
+          <span>Cadastrado em</span>
+          <span>${m.criadoEm ? new Date(m.criadoEm).toLocaleDateString('pt-BR') : '—'}</span>
+        </div>
+      </div>
+    `;
+
+    // Adiciona o botão de editar ao modal-actions
+    const modalActions = document.querySelector('#modalConteudo .modal-actions');
+    modalActions.innerHTML = `<button class="btn-editar-modal" onclick="editarMembro('${m.id}')">Editar Cadastro</button>`;
+
+    document.getElementById('modalOverlay').classList.add('aberto');
   };
 
-  // Carrega os dados do dashboard e a lista de membros quando a página é carregada
-  document.addEventListener('DOMContentLoaded', carregarDadosDashboard);
+  // Fechar modal
+  document.getElementById('modalFechar').addEventListener('click', () => {
+    document.getElementById('modalOverlay').classList.remove('aberto');
+  });
+
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modalOverlay')) {
+      document.getElementById('modalOverlay').classList.remove('aberto');
+    }
+  });
+
+  // Excluir membro
+  window.excluirMembro = async function(id, nome) {
+    if (!confirm(`Tem certeza que deseja excluir o cadastro de ${nome}?`)) return;
+    await deleteDoc(doc(db, 'membros', id));
+    todosMembros = todosMembros.filter(m => m.id !== id);
+    atualizarCards();
+    atualizarAniversarios();
+    atualizarCafeNaoParticipantes(); // Atualiza também a lista de café
+    renderizarTabela(todosMembros);
+  };
+
+  // Função para editar membro (redireciona para cadastro.html com o ID)
+  window.editarMembro = function(id) {
+    window.location.href = `cadastro.html?id=${id}`;
+  };
+
+  carregarMembros();
 </script>
 </body>
 </html>
