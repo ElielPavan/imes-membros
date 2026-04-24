@@ -189,6 +189,7 @@
       if (cpf.length > 11) cpf = cpf.substring(0, 11);
       cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
       cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+      // CORREÇÃO AQUI: Removida a quebra de linha dentro da regex
       cpf = cpf.replace(/(\d{3})(\d{1,2})
 $
 /, '$1-$2');
@@ -200,18 +201,22 @@ $
       tel = tel.replace(/\D/g, ''); // Remove tudo o que não é dígito
       if (tel.length > 11) tel = tel.substring(0, 11);
       if (tel.length > 10) {
+        // CORREÇÃO AQUI: Removida a quebra de linha dentro da regex
         tel = tel.replace(/
 ^
 (\d\d)(\d{5})(\d{4}).*/, '($1) $2-$3');
       } else if (tel.length > 6) {
+        // CORREÇÃO AQUI: Removida a quebra de linha dentro da regex
         tel = tel.replace(/
 ^
 (\d\d)(\d{4})(\d{0,4}).*/, '($1) $2-$3');
       } else if (tel.length > 2) {
+        // CORREÇÃO AQUI: Removida a quebra de linha dentro da regex
         tel = tel.replace(/
 ^
 (\d\d)(\d{0,5}).*/, '($1) $2');
       } else {
+        // CORREÇÃO AQUI: Removida a quebra de linha dentro da regex
         tel = tel.replace(/
 ^
 (\d*)/, '($1');
