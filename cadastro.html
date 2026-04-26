@@ -474,7 +474,7 @@ $
         document.getElementById('funcao').value = membro.funcao || '';
         document.getElementById('membroDesde').value = membro.membroDesde || '';
         document.getElementById('igrejaOrigem').value = membro.igrejaOrigem || '';
-        document.getElementById('obs').value = membro.obs().trim();
+        document.getElementById('obs').value = membro.obs().trim(); // AQUI ESTÁ O ERRO: membro.obs()
         document.getElementById('participouCafe').checked = membro.participouCafe || false;
         document.getElementById('dataCafe').value = membro.dataCafe || '';
 
