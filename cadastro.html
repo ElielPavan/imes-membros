@@ -416,6 +416,44 @@
     });
   }
 
+  // Função para formatar CPF
+  function formatarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ''); // Remove tudo o que não é dígito
+    if (cpf.length > 11) cpf = cpf.substring(0, 11); // Limita a 11 dígitos
+
+    // Aplica a máscara de CPF: XXX.XXX.XXX-XX
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona o primeiro ponto
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona o segundo ponto
+    cpf = cpf.replace(/(\d{3})(\d{1,2})/, '$1-$2'); // Adiciona o hífen
+
+    return cpf;
+  }
+
+  // Função para formatar Telefone
+  function formatarTelefone(tel) {
+    tel = tel.replace(/\D/g, ''); // Remove tudo o que não é dígito
+    if (tel.length > 11) tel = tel.substring(0, 11); // Limita a 11 dígitos (DDD + 9 dígitos)
+
+    // Aplica a máscara de telefone: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+    tel = tel.replace(/
+^
+(\d{2})(\d)/g, '($1) $2'); // Adiciona parênteses e espaço
+    tel = tel.replace(/(\d)(\d{4})
+$
+/, '$1-$2'); // Adiciona hífen aos últimos 4 dígitos
+
+    return tel;
+  }
+
+  // Event Listeners para formatar CPF e Telefone ao digitar
+  document.getElementById('cpf').addEventListener('input', function(e) {
+    e.target.value = formatarCPF(e.target.value);
+  });
+
+  document.getElementById('telefone').addEventListener('input', function(e) {
+    e.target.value = formatarTelefone(e.target.value);
+  });
+
   // Função para carregar os dados de um membro para edição
   async function carregarMembroParaEdicao(id) {
     try {
@@ -436,7 +474,7 @@
         document.getElementById('funcao').value = membro.funcao || '';
         document.getElementById('membroDesde').value = membro.membroDesde || '';
         document.getElementById('igrejaOrigem').value = membro.igrejaOrigem || '';
-        document.getElementById('obs').value = membro.obs || '';
+        document.getElementById('obs').value = membro.obs || ''; // CORRIGIDO AQUI: membro.obs
         document.getElementById('participouCafe').checked = membro.participouCafe || false;
         document.getElementById('dataCafe').value = membro.dataCafe || '';
 
@@ -453,7 +491,7 @@
         mostrarMsg('Membro não encontrado para edição.', 'erro');
         console.error("Nenhum documento encontrado com o ID:", id);
         // Redireciona de volta para o dashboard ou cadastro de novo membro
-        setTimeout(() => window.location.href = 'dashboard.html', 3000);
+        // setTimeout(() => window.location.href = 'dashboard.html', 3000); // Esta linha foi comentada
       }
     } catch (e) {
       mostrarMsg('Erro ao carregar dados do membro para edição.', 'erro');
@@ -539,8 +577,7 @@
         limparFormulario(); // Limpa o formulário apenas para novos cadastros
       }
       // Opcional: Redirecionar para o dashboard após sucesso
-      setTimeout(() => window.location.href = 'dashboard.html', 2000);
-
+      // setTimeout(() => window.location.href = 'dashboard.html', 2000); // Esta linha foi comentada
     } catch (e) {
       mostrarMsg('Erro ao salvar cadastro. Tente novamente.', 'erro');
       console.error(e);
@@ -550,7 +587,14 @@
   // Event Listeners
   document.getElementById('btnSalvar').addEventListener('click', salvarMembro);
   document.getElementById('btnCancelar').addEventListener('click', () => {
-    window.location.href = 'dashboard.html'; // Volta para o dashboard
+    // Se estiver em modo de edição, o botão cancelar pode voltar para o dashboard
+    if (membroIdParaEdicao) {
+      window.location.href = 'dashboard.html';
+    } else {
+      // Se for um novo cadastro, apenas limpa o formulário ou faz outra ação
+      limparFormulario();
+      mostrarMsg('Cadastro cancelado.', 'erro'); // Opcional: mostrar mensagem de cancelamento
+    }
   });
 
   // Lógica de inicialização ao carregar a página
